@@ -1,13 +1,16 @@
 call plug#begin('$XDG_CONFIG_HOME/nvim/plugins')
 Plug 'ajmwagar/vim-deus'
 Plug 'srstevenson/vim-picker'
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
+Plug 'dylanaraps/wal.vim'
 call plug#end()
 
 
+colorscheme wal
 set number          " show line numbers
 syntax enable       " enable syntax highlighting
 set background=dark " dark background colorscheme
-colorscheme deus    " set colorscheme
 set colorcolumn=79  " lines longer than 79 columns will be broken
 set shiftwidth=4    " operation >> indents 4 columns; << unindents 4 columns
 set tabstop=4       " a hard TAB displays as 4 columns
@@ -22,3 +25,5 @@ set showcmd         " show partial command in the lower right portion of the scr
 
 inoremap jk <esc>
 
+let g:UltiSnipsExpandTrigger="<c-j>"
+let g:UltiSnipsEditSplit="vertical"
