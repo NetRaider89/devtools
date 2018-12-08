@@ -4,6 +4,7 @@ Plug 'srstevenson/vim-picker'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 Plug 'dylanaraps/wal.vim'
+Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
 call plug#end()
 
 
