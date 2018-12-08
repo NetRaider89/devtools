@@ -1,25 +1,33 @@
 all: nvim 
 
-nvim: fzy ctags 
+nvim: fzy ctags ccls bear
 	wget "https://github.com/neovim/neovim/releases/download/v0.3.1/nvim.appimage" -O "nvim"
 	chmod u+x nvim
 	wget "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim" -O "nvim.config/nvim/autoload/plug.vim"
 	./nvim +PlugInstall
 
+bear:
+	git clone https://github.com/rizsotto/Bear repositories/bear-github
+	cd repositories/bear-github && cmake . -DCMAKE_INSTALL_PREFIX=${PWD} && make all && make install
+
+ccls:
+	git clone --depth=1 --recursive https://github.com/MaskRay/ccls repositories/ccls-github
+	cd repositories/ccls-github && cmake -DCMAKE_INSTALL_PREFIX=${PWD} -H. -BRelease && cmake --build Release && cd Release && make install
+
 fzy: 
-	wget -O- "https://github.com/jhawthorn/fzy/archive/0.9.tar.gz" | tar xz
-	cd fzy*/ && make && cp fzy ${PWD}/fzy
+	git clone https://github.com/jhawthorn/fzy.git repositories/fzy-github
+	cd repositories/fzy-github/ && make && make PREFIX=${PWD} install
 
 ctags:
-	wget "https://codeload.github.com/universal-ctags/ctags/zip/master" -O "ctags.zip" && unzip -o ctags.zip && rm ctags.zip 
-	cd ctags*/ && ./autogen.sh && ./configure && make &&  cp ctags ${PWD}/ctags
+	git clone https://github.com/universal-ctags/ctags.git repositories/ctags-github
+	cd repositories/ctags-github/ && ./autogen.sh && ./configure --prefix=${PWD} && make && make install
 
 snippet:
 	@echo ""
 	@echo ""
 	@echo ""
 	@echo "###################### PASTE THIS SNIPPET IN YOUR .bashrc FILE #######################"
-	@echo "export PATH=\$${PATH}:${PWD}"
+	@echo "export PATH=\$${PATH}:${PWD}:${PWD}/bin"
 	@echo "######################################################################################"
 	@echo ""
 	@echo ""
@@ -27,8 +35,8 @@ snippet:
 
 
 clean:
-	rm -rf fzy*/ fzy
-	rm -rf ctags*/ ctags
+	rm -rf repositories/*
+	rm -rf bin/* lib/* lib64/* share/*
 	rm -rf nvim.config/nvim/plugins/*
 	rm -rf nvim.config/nvim/autoload/*
 	rm -rf nvim
