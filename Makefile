@@ -6,22 +6,27 @@ CLANG_DIR=${PWD}/repositories/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-16.04
 CLANG=${CLANG_DIR}/bin/clang
 CTAGS=${PWD}/bin/ctags
 FZY=${PWD}/bin/fzy
-NVIM=${PWD}/bin/nvim
 PYENV=${PWD}/pyenv/bin/pyenv
+NODE=${PWD}/bin/node
+NVIM=${PWD}/bin/nvim
 
 all: setup nvim 
 
 nvim: ${NVIM}
-${NVIM}: pyenv fzy ctags ccls bear env.sh
+${NVIM}: node pyenv fzy ctags ccls bear env.sh
 	wget "https://github.com/neovim/neovim/releases/download/v0.3.1/nvim.appimage" -O "${PWD}/bin/nvim"
 	chmod u+x ${PWD}/bin/nvim
 	wget "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim" -O "config/nvim/autoload/plug.vim"
-	XDG_CONFIG_HOME=${PWD}/config ${PWD}/bin/nvim +PlugInstall
+	source ${PWD}/env.sh && PYENV_VERSION=nvim-provider XDG_CONFIG_HOME=${PWD}/config ${PWD}/bin/nvim +PlugInstall
 
 bear: ${BEAR}
 ${BEAR}: 
 	git clone https://github.com/rizsotto/Bear repositories/bear
 	cd repositories/bear && cmake . -DCMAKE_INSTALL_PREFIX=${PWD} && make all && make install
+
+node: ${NODE}
+${NODE}:
+	curl -sL install-node.now.sh | sh -s -- --prefix=${PWD} --yes
 
 pyenv: ${PYENV}
 ${PYENV}:
@@ -54,12 +59,12 @@ ${CTAGS}:
 	@cd repositories/ctags/ && ./autogen.sh && ./configure --prefix=${PWD} && make && make install
 
 env.sh:
-	@echo "###################################### DEVTOOLS #######################################" > ${PWD}/env.sh
-	@echo "export PYENV_ROOT=${PWD}/pyenv/" >> ${PWD}/env.sh
-	@echo "export PATH=\$${PYENV_ROOT}/bin/:${PWD}/bin:\$${PATH}" >> ${PWD}/env.sh
-	@echo "if command -v pyenv 1>/dev/null 2>&1; then\n\teval \"\$$(pyenv init -)\"\n\teval \"\$$(pyenv virtualenv-init -)\"\nfi" >> ${PWD}/env.sh
-	@echo "alias n='XDG_CONFIG_HOME=${PWD}/config nvim'" >> env.sh
-	@echo "#######################################################################################" >> ${PWD}/env.sh
+	@printf "###################################### DEVTOOLS #######################################\n" > ${PWD}/env.sh
+	@printf "export PYENV_ROOT=${PWD}/pyenv/\n" >> ${PWD}/env.sh
+	@printf "export PATH=\$${PYENV_ROOT}/bin/:${PWD}/bin:\$${PATH}\n" >> ${PWD}/env.sh
+	@printf "if command -v pyenv 1>/dev/null 2>&1; then\n\teval \"\$$(pyenv init -)\"\n\teval \"\$$(pyenv virtualenv-init -)\"\nfi\n" >> ${PWD}/env.sh
+	@printf "alias n='PYENV_VERSION=nvim-provider XDG_CONFIG_HOME=${PWD}/config nvim'\n" >> env.sh
+	@printf "#######################################################################################\n" >> ${PWD}/env.sh
 
 setup:
 	mkdir -p ${PWD}/repositories
