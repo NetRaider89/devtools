@@ -19,11 +19,19 @@ if [ -f /etc/os-release ]; then \
 	VER=$$VERSION_ID; \
 fi;\
 if [ "$$OS" == "Pop!_OS" ]; then \
-	sudo apt install -y build-essential automake pkg-config cmake libncurses5-dev zlib1g-dev libssl-dev python-openssl libffi-dev; \
+	sudo apt install -y build-essential automake pkg-config cmake \
+		libncurses5-dev zlib1g-dev libssl-dev python-openssl libffi-dev; \
 fi;\
 '
 
-ENV_PRETTY='export PYENV_ROOT=${PWD}/pyenv/;\nexport PATH=$$PYENV_ROOT/bin:${PWD}/bin:$$PATH;\nif command -v pyenv 1>/dev/null 2>&1; then\n\teval "$$(pyenv init -)";\n\teval "$$(pyenv virtualenv-init -)";\nfi;\n'
+ENV_PRETTY='\
+export PYENV_ROOT=${PWD}/pyenv/;\n\
+export PATH=$$PYENV_ROOT/bin:${PWD}/bin:$$PATH;\n\
+if command -v pyenv 1>/dev/null 2>&1; then\n\
+\teval "$$(pyenv init -)";\n\
+\teval "$$(pyenv virtualenv-init -)";\n\
+fi;\n\
+'
 ENV=$(subst \n, , $(subst \t, , ${ENV_PRETTY}))
 
 all: setup nvim 
