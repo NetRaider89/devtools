@@ -25,6 +25,7 @@ ${NVIM}: node pyenv fzy ctags ccls bear
 	wget "https://github.com/neovim/neovim/releases/download/v0.3.1/nvim.appimage" -O "${PWD}/bin/nvim"
 	chmod u+x ${PWD}/bin/nvim
 	wget "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim" -O "config/nvim/autoload/plug.vim"
+	wget "https://raw.githubusercontent.com/AlessandroYorba/Despacio/master/colors/despacio.vim" -O "config/nvim/colors/despacio.vim"
 	@${SHELL} -c ${ENV}' PYENV_VERSION=nvim-provider XDG_CONFIG_HOME=${PWD}/config ${PWD}/bin/nvim +PlugInstall'
 
 bear: ${BEAR}
@@ -87,3 +88,4 @@ clean:
 	rm -rf pyenv/
 	rm -rf config/nvim/plugins/*
 	rm -rf config/nvim/autoload/*
+	rm -rf config/nvim/colors/*
