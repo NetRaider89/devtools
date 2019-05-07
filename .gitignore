@@ -1,3 +1,11 @@
+*
+!.gitignore
 !Makefile
+!README.md
+
+# whitelist init.vim
+!config/
+config/*
+!config/nvim/
+config/nvim/*
 !config/nvim/init.vim
-**/*
