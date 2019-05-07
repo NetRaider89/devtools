@@ -1,13 +1,8 @@
 SHELL:=/bin/bash
 
-BEAR=${PWD}/bin/bear
-CCLS=${PWD}/bin/ccls
-CLANG_DIR=${PWD}/repositories/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-16.04
-CLANG=${CLANG_DIR}/bin/clang
 CTAGS=${PWD}/bin/ctags
 FZY=${PWD}/bin/fzy
 PYENV=${PWD}/pyenv/bin/pyenv
-NODE=${PWD}/bin/node
 NVIM=${PWD}/bin/nvim
 
 # TODO: add other os checks as necessary refer to
@@ -34,44 +29,21 @@ fi;\n\
 '
 ENV=$(subst \n, , $(subst \t, , ${ENV_PRETTY}))
 
-all: setup nvim 
+all: nvim 
 
-nvim: ${NVIM}
-${NVIM}: node pyenv fzy ctags ccls bear 
+nvim: setup ${NVIM}
+${NVIM}: pyenv fzy ctags 
 	wget "https://github.com/neovim/neovim/releases/download/v0.3.1/nvim.appimage" -O "${PWD}/bin/nvim"
 	chmod u+x ${PWD}/bin/nvim
 	wget "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim" -O "config/nvim/autoload/plug.vim"
 	wget "https://raw.githubusercontent.com/AlessandroYorba/Despacio/master/colors/despacio.vim" -O "config/nvim/colors/despacio.vim"
 	@${SHELL} -c ${ENV}' PYENV_VERSION=nvim-provider XDG_CONFIG_HOME=${PWD}/config ${PWD}/bin/nvim +PlugInstall'
 
-bear: ${BEAR}
-${BEAR}: 
-	@git clone https://github.com/rizsotto/Bear repositories/bear
-	@cd repositories/bear && cmake . -DCMAKE_INSTALL_PREFIX=${PWD} && make all && make install
-
-node: ${NODE}
-${NODE}:
-	@curl -sL install-node.now.sh | sh -s -- --prefix=${PWD} --yes
-	@${SHELL} -c ${ENV}'npm install -g neovim'
-
 pyenv: ${PYENV}
 ${PYENV}:
 	@git clone https://github.com/pyenv/pyenv.git ${PWD}/pyenv
 	@git clone https://github.com/pyenv/pyenv-virtualenv.git ${PWD}/pyenv/plugins/pyenv-virtualenv
 	@${SHELL} -c ${ENV}'pyenv install 3.7.2; pyenv virtualenv 3.7.2 nvim-provider; pyenv activate nvim-provider; pip install --upgrade pip neovim-remote;'
-
-ccls: clang ${CCLS} 
-${CCLS}:
-	@git clone --depth=1 --recursive https://github.com/MaskRay/ccls repositories/ccls
-	@cd repositories/ccls && \
-	cmake -DCMAKE_PREFIX_PATH=${CLANG_DIR} -DCMAKE_INSTALL_PREFIX=${PWD} -H. -BRelease && \
-	cmake --build Release && \
-	cd Release && \
-	make install
-
-clang: ${CLANG}
-${CLANG}: 
-	@wget -O- http://releases.llvm.org/7.0.1/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-16.04.tar.xz | tar xJ -C ${PWD}/repositories/
 
 fzy: ${FZY}
 ${FZY}: 
