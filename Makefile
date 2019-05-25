@@ -67,6 +67,8 @@ setup:
 	mkdir -p ${PWD}/lib
 	mkdir -p ${PWD}/lib64
 	mkdir -p ${PWD}/share
+	mkdir -p ${PWD}/config/nvim/autoload
+	mkdir -p ${PWD}/config/nvim/colors
 	@echo "Check for dependencies..."
 	@${SHELL} -c ${SETUP}
 

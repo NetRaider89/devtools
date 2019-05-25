@@ -5,6 +5,6 @@ make
 ```
 then copy the output of
 ```bash
-make snippet
+make env
 ```
 into the ~/.bashrc
