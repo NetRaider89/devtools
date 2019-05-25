@@ -27,6 +27,8 @@ set mouse=vn        " enables mouse interaction only in visual and normal modes
 set showcmd         " show partial command in the lower right portion of the screen
 
 inoremap jk <esc>
+" <Ctrl-l> redraws the screen and removes any search highlighting.
+nnoremap <silent> <C-l> :nohl<CR><C-l>
 
 let g:UltiSnipsExpandTrigger="<c-j>"
 let g:UltiSnipsEditSplit="vertical"
