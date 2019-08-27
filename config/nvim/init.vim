@@ -20,6 +20,10 @@ set shiftwidth=4    " operation >> indents 4 columns; << unindents 4 columns
 set shiftround      " round indent to multiple of 'shiftwidth'
 set noexpandtab     " don't insert spaces when hitting TABs
 
+" define chars for indentation guides
+set listchars=tab:│\ ,trail:·,extends:→
+set list
+
 set splitright      " vsplit creates a new vertical split to the right
 set splitbelow      " split creates a new horizontal split below
 set mouse=vn        " enables mouse interaction only in visual and normal modes
