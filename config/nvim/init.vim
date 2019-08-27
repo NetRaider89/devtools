@@ -15,9 +15,9 @@ set scrolloff=3
 
 " use hard tab indentation
 set autoindent      " align the new line indent with the previous line
+set tabstop=4       " a hard TAB displays as 4 columns
 set shiftwidth=4    " operation >> indents 4 columns; << unindents 4 columns
 set shiftround      " round indent to multiple of 'shiftwidth'
-set tabstop=4       " a hard TAB displays as 4 columns
 set noexpandtab     " don't insert spaces when hitting TABs
 
 set splitright      " vsplit creates a new vertical split to the right
