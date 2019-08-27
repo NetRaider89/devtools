@@ -36,3 +36,7 @@ nnoremap <silent> <C-l> :nohl<CR><C-l>
 
 let g:UltiSnipsExpandTrigger="<c-j>"
 let g:UltiSnipsEditSplit="vertical"
+
+" python settings
+" disables tabstop=8 and expandtab settings in $VIMRUNTIME/ftplugin/python.vim
+let g:python_recommended_style = 0
