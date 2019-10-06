@@ -32,7 +32,9 @@ set showcmd         " show partial command in the lower right portion of the scr
 inoremap jk <esc>
 
 " <Ctrl-l> redraws the screen and removes any search highlighting.
-nnoremap <silent> <C-l> :nohl<CR><C-l>
+" nnoremap <silent> <C-l> :nohl<CR><C-l>
+" disable highlight search
+set nohls
 
 let g:UltiSnipsExpandTrigger="<c-j>"
 let g:UltiSnipsEditSplit="vertical"
