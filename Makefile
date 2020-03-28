@@ -1,9 +1,7 @@
 SHELL:=/bin/bash
 
-CTAGS=${PWD}/bin/ctags
-FZY=${PWD}/bin/fzy
 PYENV=${PWD}/pyenv/bin/pyenv
-NVIM=${PWD}/bin/nvim
+NVIM=${PWD}/nvim-linux64/bin/nvim
 
 # TODO: add other os checks as necessary refer to
 # https://unix.stackexchange.com/a/6348
@@ -21,7 +19,7 @@ fi;\
 
 ENV_PRETTY='\
 export PYENV_ROOT=${PWD}/pyenv/;\n\
-export PATH=$$PYENV_ROOT/bin:${PWD}/bin:$$PATH;\n\
+export PATH=$$PYENV_ROOT/bin:${PWD}/nvim-linux64/bin:$$PATH;\n\
 if command -v pyenv 1>/dev/null 2>&1; then\n\
 \teval "$$(pyenv init -)";\n\
 \teval "$$(pyenv virtualenv-init -)";\n\
@@ -31,13 +29,13 @@ ENV=$(subst \n, , $(subst \t, , ${ENV_PRETTY}))
 
 all: nvim 
 
-nvim: setup ${NVIM}
-${NVIM}: pyenv fzy ctags 
-	wget "https://github.com/neovim/neovim/releases/download/v0.3.1/nvim.appimage" -O "${PWD}/bin/nvim"
-	chmod u+x ${PWD}/bin/nvim
+nvim: setup pyenv ${NVIM}
+${NVIM}: 
+	wget -qO- "https://github.com/neovim/neovim/releases/download/v0.4.3/nvim-linux64.tar.gz" | tar xz
+	chmod u+x ${NVIM}
 	wget "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim" -O "config/nvim/autoload/plug.vim"
 	wget "https://raw.githubusercontent.com/AlessandroYorba/Despacio/master/colors/despacio.vim" -O "config/nvim/colors/despacio.vim"
-	@${SHELL} -c ${ENV}' PYENV_VERSION=nvim-provider XDG_CONFIG_HOME=${PWD}/config ${PWD}/bin/nvim +PlugInstall'
+	@${SHELL} -c ${ENV}' PYENV_VERSION=nvim-provider XDG_CONFIG_HOME=${PWD}/config ${NVIM} +PlugInstall'
 
 pyenv: ${PYENV}
 ${PYENV}:
@@ -45,15 +43,12 @@ ${PYENV}:
 	@git clone https://github.com/pyenv/pyenv-virtualenv.git ${PWD}/pyenv/plugins/pyenv-virtualenv
 	@${SHELL} -c ${ENV}'pyenv install 3.7.2; pyenv virtualenv 3.7.2 nvim-provider; pyenv activate nvim-provider; pip install --upgrade pip neovim-remote;'
 
-fzy: ${FZY}
-${FZY}: 
-	@git clone https://github.com/jhawthorn/fzy.git repositories/fzy
-	@cd repositories/fzy && make && make PREFIX=${PWD} install
+setup:
+	mkdir -p ${PWD}/config/nvim/autoload
+	mkdir -p ${PWD}/config/nvim/colors
+	@echo "Check for dependencies..."
+	@${SHELL} -c ${SETUP}
 
-ctags: ${CTAGS}
-${CTAGS}:
-	@git clone https://github.com/universal-ctags/ctags.git repositories/ctags
-	@cd repositories/ctags/ && ./autogen.sh && ./configure --prefix=${PWD} && make && make install
 
 env:
 	@printf '###################################### DEVTOOLS #######################################\n'
@@ -61,20 +56,7 @@ env:
 	@printf 'alias n="PYENV_VERSION=nvim-provider XDG_CONFIG_HOME=${PWD}/config nvim"\n'
 	@printf '#######################################################################################\n'
 
-setup:
-	mkdir -p ${PWD}/repositories
-	mkdir -p ${PWD}/bin
-	mkdir -p ${PWD}/lib
-	mkdir -p ${PWD}/lib64
-	mkdir -p ${PWD}/share
-	mkdir -p ${PWD}/config/nvim/autoload
-	mkdir -p ${PWD}/config/nvim/colors
-	@echo "Check for dependencies..."
-	@${SHELL} -c ${SETUP}
-
 clean:
-	rm -rf repositories/*
-	rm -rf bin/* lib/* lib64/* share/* include/*
 	rm -rf pyenv/
 	rm -rf config/nvim/plugins/*
 	rm -rf config/nvim/autoload/*
