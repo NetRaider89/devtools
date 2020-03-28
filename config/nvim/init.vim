@@ -1,8 +1,5 @@
 call plug#begin('$XDG_CONFIG_HOME/nvim/plugins')
 Plug 'ajmwagar/vim-deus'
-Plug 'srstevenson/vim-picker'
-Plug 'SirVer/ultisnips'
-Plug 'honza/vim-snippets'
 call plug#end()
 
 set background=dark " dark background colorscheme
@@ -13,7 +10,7 @@ set number          " show line numbers
 set colorcolumn=79  " lines longer than 79 columns will be broken
 set scrolloff=3
 
-" use hard tab indentation
+" uses hard tab indentation
 set autoindent      " align the new line indent with the previous line
 set tabstop=4       " a hard TAB displays as 4 columns
 set shiftwidth=4    " operation >> indents 4 columns; << unindents 4 columns
@@ -31,13 +28,8 @@ set showcmd         " show partial command in the lower right portion of the scr
 
 inoremap jk <esc>
 
-" <Ctrl-l> redraws the screen and removes any search highlighting.
-" nnoremap <silent> <C-l> :nohl<CR><C-l>
 " disable highlight search
 set nohls
-
-let g:UltiSnipsExpandTrigger="<c-j>"
-let g:UltiSnipsEditSplit="vertical"
 
 " python settings
 " disables tabstop=8 and expandtab settings in $VIMRUNTIME/ftplugin/python.vim
