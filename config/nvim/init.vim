@@ -2,6 +2,9 @@ call plug#begin('$XDG_CONFIG_HOME/nvim/plugins')
 Plug 'ajmwagar/vim-deus'
 call plug#end()
 
+" <g:python3_host_prog>
+" <g:node_host_prog>
+
 set background=dark " dark background colorscheme
 colorscheme despacio
 
