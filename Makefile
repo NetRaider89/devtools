@@ -1,9 +1,11 @@
 SHELL:=/bin/bash
 
 PYENV=${PWD}/pyenv/bin/pyenv
+NVM=${PWD}/nvm/nvm.sh
 NVIM=${PWD}/nvim-linux64/bin/nvim
 
 PYTHON3_VERSION=3.7.2
+NODE_VERSION=v12.16.1
 
 # TODO: add other os checks as necessary refer to
 # https://unix.stackexchange.com/a/6348
@@ -31,7 +33,7 @@ ENV=$(subst \n, , $(subst \t, , ${ENV_PRETTY}))
 
 all: nvim 
 
-nvim: setup pyenv ${NVIM}
+nvim: setup pyenv nvm ${NVIM}
 ${NVIM}: 
 	wget -qO- "https://github.com/neovim/neovim/releases/download/v0.4.3/nvim-linux64.tar.gz" | tar xz
 	chmod u+x ${NVIM}
@@ -52,15 +54,21 @@ setup:
 	@echo "Check for dependencies..."
 	@${SHELL} -c ${SETUP}
 
-
+nvm: ${NVM}
+${NVM}:
+	@git clone https://github.com/nvm-sh/nvm.git ${PWD}/nvm && cd ${PWD}/nvm && git checkout v0.35.3
+	@source ${PWD}/nvm/nvm.sh && nvm install v12.16.1 && nvm use v12.16.1
+	sed -i "/node_host_prog/c\let g:node_host_prog=\"${PWD}/nvm/versions/node/${NODE_VERSION}/bin/neovim-node-host\"" ${PWD}/config/nvim/init.vim
 env:
 	@printf '###################################### DEVTOOLS #######################################\n'
 	@printf ${ENV_PRETTY}
+	@printf 'source ${PWD}/nvm/nvm.sh\n'
 	@printf 'alias n="PYENV_VERSION=nvim-provider XDG_CONFIG_HOME=${PWD}/config nvim"\n'
 	@printf '#######################################################################################\n'
 
 clean:
 	rm -rf pyenv/
+	rm -rf nvm/
 	rm -rf nvim-linux64/
 	rm -rf config/nvim/plugins/*
 	rm -rf config/nvim/autoload/*
