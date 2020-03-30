@@ -3,6 +3,8 @@ SHELL:=/bin/bash
 PYENV=${PWD}/pyenv/bin/pyenv
 NVIM=${PWD}/nvim-linux64/bin/nvim
 
+PYTHON3_VERSION=3.7.2
+
 # TODO: add other os checks as necessary refer to
 # https://unix.stackexchange.com/a/6348
 SETUP='\
@@ -41,7 +43,8 @@ pyenv: ${PYENV}
 ${PYENV}:
 	@git clone https://github.com/pyenv/pyenv.git ${PWD}/pyenv
 	@git clone https://github.com/pyenv/pyenv-virtualenv.git ${PWD}/pyenv/plugins/pyenv-virtualenv
-	@${SHELL} -c ${ENV}'pyenv install 3.7.2; pyenv virtualenv 3.7.2 nvim-provider; pyenv activate nvim-provider; pip install --upgrade pip neovim-remote;'
+	@${SHELL} -c ${ENV}'pyenv install ${PYTHON3_VERSION} && pyenv virtualenv ${PYTHON3_VERSION} nvim-provider && pyenv activate nvim-provider && pip install --upgrade pip neovim-remote'
+	PYTHON3_PATH=$$( ${SHELL} -c ${ENV}' PYENV_VERSION=nvim-provider pyenv which python3' ) && sed -i "/python3_host_prog/c\let g:python3_host_prog=\"$$PYTHON3_PATH\"" ${PWD}/config/nvim/init.vim
 
 setup:
 	mkdir -p ${PWD}/config/nvim/autoload
@@ -58,6 +61,7 @@ env:
 
 clean:
 	rm -rf pyenv/
+	rm -rf nvim-linux64/
 	rm -rf config/nvim/plugins/*
 	rm -rf config/nvim/autoload/*
 	rm -rf config/nvim/colors/*
