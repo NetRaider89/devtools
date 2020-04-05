@@ -8,6 +8,7 @@ PYTHON3_VERSION=3.7.2
 NODE_VERSION=v12.16.1
 
 PYTHON3_BIN=${PWD}/pyenv/versions/nvim-provider/bin/python3
+NODE_BIN=${PWD}/nvm/versions/node/${NODE_VERSION}/bin/neovim-node-host
 
 # TODO: add other os checks as necessary refer to
 # https://unix.stackexchange.com/a/6348
@@ -37,7 +38,7 @@ ENV=$(subst \n, , $(subst \t, , ${ENV_PRETTY}))
 
 all: nvim 
 
-nvim: setup pyenv nvm python ${NVIM}
+nvim: setup pyenv nvm python node ${NVIM}
 ${NVIM}: 
 	wget -qO- "https://github.com/neovim/neovim/releases/download/v0.4.3/nvim-linux64.tar.gz" | tar xz
 	chmod u+x ${NVIM}
@@ -55,17 +56,22 @@ ${PYTHON3_BIN}:
 	@${SHELL} -c ${ENV}'pyenv install -s ${PYTHON3_VERSION} && pyenv virtualenv -f ${PYTHON3_VERSION} nvim-provider && pyenv activate nvim-provider && pip install --upgrade pip neovim-remote'
 	PYTHON3_PATH=$$( ${SHELL} -c ${ENV}' PYENV_VERSION=nvim-provider pyenv which python3' ) && sed -i "/python3_host_prog/c\let g:python3_host_prog=\"$$PYTHON3_PATH\"" ${PWD}/config/nvim/init.vim
 
+nvm: ${NVM}
+${NVM}:
+	@git clone https://github.com/nvm-sh/nvm.git ${PWD}/nvm && cd ${PWD}/nvm && git checkout v0.35.3
+
+node: ${NODE_BIN}
+${NODE_BIN}:
+	@source ${PWD}/nvm/nvm.sh && nvm install ${NODE_VERSION} && nvm use ${NODE_VERSION} && npm install -g neovim
+	sed -i "/node_host_prog/c\let g:node_host_prog=\"${PWD}/nvm/versions/node/${NODE_VERSION}/bin/neovim-node-host\"" ${PWD}/config/nvim/init.vim
+
+
 setup:
 	mkdir -p ${PWD}/config/nvim/autoload
 	mkdir -p ${PWD}/config/nvim/colors
 	@echo "Check for dependencies..."
 	@${SHELL} -c ${SETUP}
 
-nvm: ${NVM}
-${NVM}:
-	@git clone https://github.com/nvm-sh/nvm.git ${PWD}/nvm && cd ${PWD}/nvm && git checkout v0.35.3
-	@source ${PWD}/nvm/nvm.sh && nvm install v12.16.1 && nvm use v12.16.1
-	sed -i "/node_host_prog/c\let g:node_host_prog=\"${PWD}/nvm/versions/node/${NODE_VERSION}/bin/neovim-node-host\"" ${PWD}/config/nvim/init.vim
 env:
 	@printf '###################################### DEVTOOLS #######################################\n'
 	@printf ${ENV_PRETTY}
