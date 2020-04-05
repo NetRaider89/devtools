@@ -7,6 +7,8 @@ NVIM=${PWD}/nvim-linux64/bin/nvim
 PYTHON3_VERSION=3.7.2
 NODE_VERSION=v12.16.1
 
+PYTHON3_BIN=${PWD}/pyenv/versions/nvim-provider/bin/python3
+
 # TODO: add other os checks as necessary refer to
 # https://unix.stackexchange.com/a/6348
 SETUP='\
@@ -30,11 +32,12 @@ if command -v pyenv 1>/dev/null 2>&1; then\n\
 \teval "$$(pyenv virtualenv-init -)";\n\
 fi;\n\
 '
+
 ENV=$(subst \n, , $(subst \t, , ${ENV_PRETTY}))
 
 all: nvim 
 
-nvim: setup pyenv nvm ${NVIM}
+nvim: setup pyenv nvm python ${NVIM}
 ${NVIM}: 
 	wget -qO- "https://github.com/neovim/neovim/releases/download/v0.4.3/nvim-linux64.tar.gz" | tar xz
 	chmod u+x ${NVIM}
@@ -46,7 +49,10 @@ pyenv: ${PYENV}
 ${PYENV}:
 	@git clone https://github.com/pyenv/pyenv.git ${PWD}/pyenv
 	@git clone https://github.com/pyenv/pyenv-virtualenv.git ${PWD}/pyenv/plugins/pyenv-virtualenv
-	@${SHELL} -c ${ENV}'pyenv install ${PYTHON3_VERSION} && pyenv virtualenv ${PYTHON3_VERSION} nvim-provider && pyenv activate nvim-provider && pip install --upgrade pip neovim-remote'
+
+python: ${PYTHON3_BIN}
+${PYTHON3_BIN}:
+	@${SHELL} -c ${ENV}'pyenv install -s ${PYTHON3_VERSION} && pyenv virtualenv -f ${PYTHON3_VERSION} nvim-provider && pyenv activate nvim-provider && pip install --upgrade pip neovim-remote'
 	PYTHON3_PATH=$$( ${SHELL} -c ${ENV}' PYENV_VERSION=nvim-provider pyenv which python3' ) && sed -i "/python3_host_prog/c\let g:python3_host_prog=\"$$PYTHON3_PATH\"" ${PWD}/config/nvim/init.vim
 
 setup:
