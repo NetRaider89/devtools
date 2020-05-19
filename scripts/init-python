@@ -1,0 +1,31 @@
+#!/bin/bash
+
+PYTHON_VERSION=$1
+PROJECT_NAME=$2
+
+PACKAGES="matplotlib numpy pandas scipy scikit-learn ray tqdm"
+
+echo -e "\nCreate project directory"
+mkdir $PROJECT_NAME
+cd $PROJECT_NAME
+
+echo -e "\nSet python version"
+pyenv local $PYTHON_VERSION
+pyenv version
+
+echo -e "\nSet up pipenv environment"
+pipenv install
+
+echo -e "\nInstall ipython kernel"
+pipenv install --dev ipykernel
+
+echo -e "\nInstall dependencies"
+pipenv install $PACKAGES
+
+# get name of environment being project name
+venv_prettyname=$PROJECT_NAME
+venv_name="ipykernel_$venv_prettyname"
+
+echo -e "\nAdd ipython kernel to list of jupyter kernels"
+$(pipenv --py) -m ipykernel install --user --name $venv_name \
+--display-name "Python3 ($venv_prettyname)"
