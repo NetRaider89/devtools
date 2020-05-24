@@ -23,6 +23,11 @@ if [ "$$OS" == "Pop!_OS" ]; then \
 		libncurses5-dev zlib1g-dev libssl-dev python-openssl libffi-dev; \
 	sudo apt build-dep -y python3.7; \
 fi;\
+if [ "$$OS" == "elementary OS" ]; then \
+	sudo apt install -y build-essential automake pkg-config cmake \
+		libncurses5-dev zlib1g-dev libssl-dev python-openssl libffi-dev; \
+	sudo apt build-dep -y python3.7; \
+fi;\
 '
 
 ENV_PRETTY='\
