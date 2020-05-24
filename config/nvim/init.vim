@@ -1,6 +1,6 @@
 call plug#begin('$XDG_CONFIG_HOME/nvim/plugins')
 Plug 'ajmwagar/vim-deus'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'davidhalter/jedi-vim'
 call plug#end()
 
 " <g:python3_host_prog>
@@ -31,7 +31,6 @@ set mouse=vn
 set showcmd
 
 inoremap jk <esc>
-inoremap <silent><expr> <C-x><C-o> coc#refresh()
 
 " disable highlight search
 set nohls

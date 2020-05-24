@@ -7,7 +7,7 @@ NVIM=${PWD}/nvim-linux64/bin/nvim
 PYTHON3_VERSION=3.7.2
 NODE_VERSION=v12.16.1
 
-PYTHON3_BIN=${PWD}/pyenv/versions/nvim-provider/bin/python3
+PYTHON3_BIN=${PWD}/nvim-venv/bin/python3
 NODE_BIN=${PWD}/nvm/versions/node/${NODE_VERSION}/bin/neovim-node-host
 
 # TODO: add other os checks as necessary refer to
@@ -30,7 +30,6 @@ export PYENV_ROOT=${PWD}/pyenv/;\n\
 export PATH=$$PYENV_ROOT/bin:${PWD}/nvim-linux64/bin:$$PATH;\n\
 if command -v pyenv 1>/dev/null 2>&1; then\n\
 \teval "$$(pyenv init -)";\n\
-\teval "$$(pyenv virtualenv-init -)";\n\
 fi;\n\
 '
 
@@ -44,17 +43,16 @@ ${NVIM}:
 	chmod u+x ${NVIM}
 	wget "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim" -O "config/nvim/autoload/plug.vim"
 	wget "https://raw.githubusercontent.com/AlessandroYorba/Despacio/master/colors/despacio.vim" -O "config/nvim/colors/despacio.vim"
-	@${SHELL} -c ${ENV}' PYENV_VERSION=nvim-provider XDG_CONFIG_HOME=${PWD}/config ${NVIM} +PlugInstall'
+	@${SHELL} -c ${ENV}' XDG_CONFIG_HOME=${PWD}/config ${NVIM} +PlugInstall'
 
 pyenv: ${PYENV}
 ${PYENV}:
 	@git clone https://github.com/pyenv/pyenv.git ${PWD}/pyenv
-	@git clone https://github.com/pyenv/pyenv-virtualenv.git ${PWD}/pyenv/plugins/pyenv-virtualenv
 
 python: ${PYTHON3_BIN}
 ${PYTHON3_BIN}:
-	@${SHELL} -c ${ENV}'pyenv install -s ${PYTHON3_VERSION} && pyenv virtualenv -f ${PYTHON3_VERSION} nvim-provider && pyenv activate nvim-provider && pip install --upgrade pip neovim-remote'
-	PYTHON3_PATH=$$( ${SHELL} -c ${ENV}' PYENV_VERSION=nvim-provider pyenv which python3' ) && sed -i "/python3_host_prog/c\let g:python3_host_prog=\"$$PYTHON3_PATH\"" ${PWD}/config/nvim/init.vim
+	@${SHELL} -c ${ENV}'pyenv install -s ${PYTHON3_VERSION} && pyenv shell ${PYTHON3_VERSION} && python -m venv nvim-venv && pip install --upgrade pip pynvim jedi'
+	sed -i "/python3_host_prog/c\let g:python3_host_prog=\"${PYTHON3_BIN}\"" ${PWD}/config/nvim/init.vim
 
 nvm: ${NVM}
 ${NVM}:
@@ -76,7 +74,7 @@ env:
 	@printf '###################################### DEVTOOLS #######################################\n'
 	@printf ${ENV_PRETTY}
 	@printf 'source ${PWD}/nvm/nvm.sh\n'
-	@printf 'alias n="PYENV_VERSION=nvim-provider XDG_CONFIG_HOME=${PWD}/config nvim"\n'
+	@printf 'alias n="XDG_CONFIG_HOME=${PWD}/config nvim"\n'
 	@printf '#######################################################################################\n'
 
 clean:
