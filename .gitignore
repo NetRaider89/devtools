@@ -10,3 +10,6 @@ config/*
 config/nvim/*
 !config/nvim/init.vim
 !config/nvim/coc-settings.json
+
+!scripts
+!scripts/*
