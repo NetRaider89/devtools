@@ -56,7 +56,7 @@ ${PYENV}:
 
 python: ${PYTHON3_BIN}
 ${PYTHON3_BIN}:
-	@${SHELL} -c ${ENV}'pyenv install -s ${PYTHON3_VERSION} && pyenv shell ${PYTHON3_VERSION} && python -m venv nvim-venv && pip install --upgrade pip pynvim jedi'
+	@${SHELL} -c ${ENV}'pyenv install -s ${PYTHON3_VERSION} && pyenv shell ${PYTHON3_VERSION} && python -m venv nvim-venv && source nvim-venv/bin/activate && pip install --upgrade pip pynvim jedi'
 	sed -i "/python3_host_prog/c\let g:python3_host_prog=\"${PYTHON3_BIN}\"" ${PWD}/config/nvim/init.vim
 
 nvm: ${NVM}
