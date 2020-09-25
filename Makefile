@@ -1,9 +1,14 @@
 SHELL:=/bin/bash
 
-CTAGS=${PWD}/bin/ctags
-FZY=${PWD}/bin/fzy
 PYENV=${PWD}/pyenv/bin/pyenv
-NVIM=${PWD}/bin/nvim
+NVM=${PWD}/nvm/nvm.sh
+NVIM=${PWD}/nvim-linux64/bin/nvim
+
+PYTHON3_VERSION=3.7.2
+NODE_VERSION=v12.16.1
+
+PYTHON3_BIN=${PWD}/nvim-venv/bin/python3
+NODE_BIN=${PWD}/nvm/versions/node/${NODE_VERSION}/bin/neovim-node-host
 
 # TODO: add other os checks as necessary refer to
 # https://unix.stackexchange.com/a/6348
@@ -14,68 +19,76 @@ if [ -f /etc/os-release ]; then \
 	VER=$$VERSION_ID; \
 fi;\
 if [ "$$OS" == "Pop!_OS" ]; then \
-	sudo apt install -y build-essential automake pkg-config cmake \
+	sudo apt install -y build-essential automake pkg-config cmake trash-cli \
 		libncurses5-dev zlib1g-dev libssl-dev python-openssl libffi-dev; \
+	sudo apt build-dep -y python3.7; \
+fi;\
+if [ "$$OS" == "elementary OS" ]; then \
+	sudo apt install -y build-essential automake pkg-config cmake trash-cli \
+		libncurses5-dev zlib1g-dev libssl-dev python-openssl libffi-dev; \
+	sudo apt build-dep -y python3.7; \
 fi;\
 '
 
 ENV_PRETTY='\
 export PYENV_ROOT=${PWD}/pyenv/;\n\
-export PATH=$$PYENV_ROOT/bin:${PWD}/bin:$$PATH;\n\
+export PATH=$$PYENV_ROOT/bin:${PWD}/nvim-linux64/bin:$$PATH;\n\
 if command -v pyenv 1>/dev/null 2>&1; then\n\
 \teval "$$(pyenv init -)";\n\
-\teval "$$(pyenv virtualenv-init -)";\n\
 fi;\n\
 '
+
 ENV=$(subst \n, , $(subst \t, , ${ENV_PRETTY}))
 
 all: nvim 
 
-nvim: setup ${NVIM}
-${NVIM}: pyenv fzy ctags 
-	wget "https://github.com/neovim/neovim/releases/download/v0.3.1/nvim.appimage" -O "${PWD}/bin/nvim"
-	chmod u+x ${PWD}/bin/nvim
+nvim: setup pyenv nvm python node ${NVIM}
+${NVIM}: 
+	wget -qO- "https://github.com/neovim/neovim/releases/download/v0.4.3/nvim-linux64.tar.gz" | tar xz
+	chmod u+x ${NVIM}
 	wget "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim" -O "config/nvim/autoload/plug.vim"
 	wget "https://raw.githubusercontent.com/AlessandroYorba/Despacio/master/colors/despacio.vim" -O "config/nvim/colors/despacio.vim"
-	@${SHELL} -c ${ENV}' PYENV_VERSION=nvim-provider XDG_CONFIG_HOME=${PWD}/config ${PWD}/bin/nvim +PlugInstall'
+	@${SHELL} -c ${ENV}' XDG_CONFIG_HOME=${PWD}/config ${NVIM} +PlugInstall'
 
 pyenv: ${PYENV}
 ${PYENV}:
 	@git clone https://github.com/pyenv/pyenv.git ${PWD}/pyenv
-	@git clone https://github.com/pyenv/pyenv-virtualenv.git ${PWD}/pyenv/plugins/pyenv-virtualenv
-	@${SHELL} -c ${ENV}'pyenv install 3.7.2; pyenv virtualenv 3.7.2 nvim-provider; pyenv activate nvim-provider; pip install --upgrade pip neovim-remote;'
 
-fzy: ${FZY}
-${FZY}: 
-	@git clone https://github.com/jhawthorn/fzy.git repositories/fzy
-	@cd repositories/fzy && make && make PREFIX=${PWD} install
+python: ${PYTHON3_BIN}
+${PYTHON3_BIN}:
+	@${SHELL} -c ${ENV}'pyenv install -s ${PYTHON3_VERSION} && pyenv shell ${PYTHON3_VERSION} && python -m venv nvim-venv && source nvim-venv/bin/activate && pip install --upgrade pip pynvim jedi'
+	sed -i "/python3_host_prog/c\let g:python3_host_prog=\"${PYTHON3_BIN}\"" ${PWD}/config/nvim/init.vim
 
-ctags: ${CTAGS}
-${CTAGS}:
-	@git clone https://github.com/universal-ctags/ctags.git repositories/ctags
-	@cd repositories/ctags/ && ./autogen.sh && ./configure --prefix=${PWD} && make && make install
+nvm: ${NVM}
+${NVM}:
+	@git clone https://github.com/nvm-sh/nvm.git ${PWD}/nvm && cd ${PWD}/nvm && git checkout v0.35.3
 
-env:
-	@printf '###################################### DEVTOOLS #######################################\n'
-	@printf ${ENV_PRETTY}
-	@printf 'alias n="PYENV_VERSION=nvim-provider XDG_CONFIG_HOME=${PWD}/config nvim"\n'
-	@printf '#######################################################################################\n'
+node: ${NODE_BIN}
+${NODE_BIN}:
+	@source ${PWD}/nvm/nvm.sh && nvm install ${NODE_VERSION} && nvm use ${NODE_VERSION} && npm install -g neovim
+	sed -i "/node_host_prog/c\let g:node_host_prog=\"${PWD}/nvm/versions/node/${NODE_VERSION}/bin/neovim-node-host\"" ${PWD}/config/nvim/init.vim
+
 
 setup:
-	mkdir -p ${PWD}/repositories
-	mkdir -p ${PWD}/bin
-	mkdir -p ${PWD}/lib
-	mkdir -p ${PWD}/lib64
-	mkdir -p ${PWD}/share
 	mkdir -p ${PWD}/config/nvim/autoload
 	mkdir -p ${PWD}/config/nvim/colors
 	@echo "Check for dependencies..."
 	@${SHELL} -c ${SETUP}
 
+env:
+	@printf '###################################### DEVTOOLS #######################################\n'
+	@printf ${ENV_PRETTY}
+	@printf 'source ${PWD}/nvm/nvm.sh\n'
+	@printf 'alias n="XDG_CONFIG_HOME=${PWD}/config nvim"\n'
+	@printf 'alias pip-freeze="pip list --format=freeze --exclude-editable --not-required"'
+	@printf 'alias srcenv="source .venv/bin/activate"'
+	@printf 'alias rm="trash"'
+	@printf '#######################################################################################\n'
+
 clean:
-	rm -rf repositories/*
-	rm -rf bin/* lib/* lib64/* share/* include/*
 	rm -rf pyenv/
+	rm -rf nvm/
+	rm -rf nvim-linux64/
 	rm -rf config/nvim/plugins/*
 	rm -rf config/nvim/autoload/*
 	rm -rf config/nvim/colors/*

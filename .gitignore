@@ -9,3 +9,7 @@ config/*
 !config/nvim/
 config/nvim/*
 !config/nvim/init.vim
+!config/nvim/coc-settings.json
+
+!bin
+!bin/*
