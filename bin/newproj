@@ -33,11 +33,11 @@ done
 
 mkdir -p $PROJ_NAME/$PROJ_NAME
 cd $PROJ_NAME
-#pyenv local $PYTHON_VERSION
-#python -m venv --prompt=$PROJ_NAME .venv
-#source ./.venv/bin/activate
-#pip install --upgrade pip
-#pip install $PACKAGES
+pyenv local $PYTHON_VERSION
+python -m venv --prompt=$PROJ_NAME .venv
+source ./.venv/bin/activate
+pip install --upgrade pip
+pip install $PACKAGES
 # TODO: register ipython kernel
 cat << EOF > setup.py
 from distutils.core import setup
