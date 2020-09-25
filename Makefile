@@ -77,6 +77,14 @@ setup:
 
 env:
 	@printf '###################################### DEVTOOLS #######################################\n'
+	@printf 'cd() {\n'
+	@printf '\t# disable any virtualenvs if any\n'
+	@printf '\t[ ! -z $$VIRTUAL_ENV ] && deactivate\n'
+	@printf '\t# actually change the folder\n'
+	@printf '\tbuiltin cd "$$@"\n'
+	@printf '\t# source the virtualenv if present\n'
+	@printf '\t[ -e .venv/bin/activate ] && source .venv/bin/activate\n'
+	@printf '}\n'
 	@printf ${ENV_PRETTY}
 	@printf 'source ${PWD}/nvm/nvm.sh\n'
 	@printf 'alias n="XDG_CONFIG_HOME=${PWD}/config nvim"\n'
