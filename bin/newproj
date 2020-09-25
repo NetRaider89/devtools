@@ -1,0 +1,51 @@
+#!/bin/bash
+set -e
+set -u
+set -o pipefail
+
+usage() {
+	echo "Usage: $(basename $0) -n PROJECT_NAME -v PYTHON_VERSION" >&2
+	exit 1
+}
+
+PROJ_NAME="undefined"
+PYTHON_VERSION="undefined"
+PACKAGES="ipykernel numpy scipy scikit-learn matplotlib seaborn pandas"
+
+while getopts 'n:v:' OPTION; do
+	case "$OPTION" in
+		n)
+			PROJ_NAME=$OPTARG
+			echo "Project name is $PROJ_NAME"
+			;;
+		v)
+			PYTHON_VERSION=$OPTARG
+			echo "Python version is $PYTHON_VERSION"
+			;;
+		*)
+			usage
+			;;
+	esac
+done
+
+[ $PROJ_NAME = "undefined" ] && echo "Missing parameter -n" && usage
+[ $PYTHON_VERSION = "undefined" ] && echo "Missing parameter -v" && usage
+
+mkdir -p $PROJ_NAME/$PROJ_NAME
+cd $PROJ_NAME
+#pyenv local $PYTHON_VERSION
+#python -m venv --prompt=$PROJ_NAME .venv
+#source ./.venv/bin/activate
+#pip install --upgrade pip
+#pip install $PACKAGES
+# TODO: register ipython kernel
+cat << EOF > setup.py
+from distutils.core import setup
+
+setup(
+    name='$PROJ_NAME',
+    version='0.1dev',
+    packages=['$PROJ_NAME',],
+)
+EOF
+touch $PROJ_NAME/__init__.py
