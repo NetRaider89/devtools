@@ -19,12 +19,12 @@ if [ -f /etc/os-release ]; then \
 	VER=$$VERSION_ID; \
 fi;\
 if [ "$$OS" == "Pop!_OS" ]; then \
-	sudo apt install -y build-essential automake pkg-config cmake \
+	sudo apt install -y build-essential automake pkg-config cmake trash-cli \
 		libncurses5-dev zlib1g-dev libssl-dev python-openssl libffi-dev; \
 	sudo apt build-dep -y python3.7; \
 fi;\
 if [ "$$OS" == "elementary OS" ]; then \
-	sudo apt install -y build-essential automake pkg-config cmake \
+	sudo apt install -y build-essential automake pkg-config cmake trash-cli \
 		libncurses5-dev zlib1g-dev libssl-dev python-openssl libffi-dev; \
 	sudo apt build-dep -y python3.7; \
 fi;\
@@ -80,6 +80,9 @@ env:
 	@printf ${ENV_PRETTY}
 	@printf 'source ${PWD}/nvm/nvm.sh\n'
 	@printf 'alias n="XDG_CONFIG_HOME=${PWD}/config nvim"\n'
+	@printf 'alias pip-freeze="pip list --format=freeze --exclude-editable --not-required"'
+	@printf 'alias srcenv="source .venv/bin/activate"'
+	@printf 'alias rm="trash"'
 	@printf '#######################################################################################\n'
 
 clean:
