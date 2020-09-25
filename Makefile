@@ -32,7 +32,7 @@ fi;\
 
 ENV_PRETTY='\
 export PYENV_ROOT=${PWD}/pyenv/;\n\
-export PATH=$$PYENV_ROOT/bin:${PWD}/nvim-linux64/bin:$$PATH;\n\
+export PATH=${PWD}/bin:$$PYENV_ROOT/bin:${PWD}/nvim-linux64/bin:$$PATH;\n\
 if command -v pyenv 1>/dev/null 2>&1; then\n\
 \teval "$$(pyenv init -)";\n\
 fi;\n\
